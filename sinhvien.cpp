@@ -6,16 +6,19 @@
 #include<fstream>
 #include<sstream>
 #include<iomanip>
+#include <regex>
 vector<SinhVien>danhsachsinhvien;
+
 void themsinhvien()
 {
 	SinhVien sv;
-	
+	cout << "\nNhap thong tin sinh vien:\n";
+	cin.ignore();
 	cout << "\n Nhap ma sinh vien.";
 	getline(cin, sv.thongtincanhan.masv);
 	cout << "\n Nhap ho ten. ";
 	getline(cin, sv.thongtincanhan.hoten);
-	cout << "Nhap gioi tinh. ";
+	cout << "Nhap gioi tinh(nam/nu). ";
 	getline(cin, sv.thongtincanhan.gioitinh);
 	cout << "Nhap ngay thang nam sinh (DD/MM/YYYY) ";
 	getline(cin, sv.thongtincanhan.ngaysinh);
@@ -30,7 +33,7 @@ void themsinhvien()
 	cout << "Nhap diem GPA. ";
 	cin >> sv.thongtinhoctap.diemGPA;
 	cin.ignore();
-	cout << "Nhap trang thai hoc tap. ";
+	cout << "Nhap trang thai hoc tap(con/khong). ";
 	getline(cin, sv.thongtinhoctap.trangthai);
 	cout << "Nhap so tin chi da hoan thanh. ";
 	cin >> sv.thongtinhoctap.soTinChiHoanThanh;
@@ -39,9 +42,9 @@ void themsinhvien()
 	getline(cin, sv.thongtinlienhe.gmail);
 	cout << "Nhap so dien thoai. ";
 	getline(cin, sv.thongtinlienhe.sodienthoai);
-	cout << "Nhap hoc bong (neu co). ";
+	cout << "Nhap hoc bong (co/khong). ";
 	getline(cin, sv.thongtinbosung.hocbong);
-	cout << "Nhap hoat dong ngoai khoa(neu co). ";
+	cout << "Nhap hoat dong ngoai khoa (co/khong). ";
 	getline(cin, sv.thongtinbosung.hoatdong);
 	danhsachsinhvien.push_back(sv);
 	cout << "Them sinh vien thanh cong!!!";
@@ -51,10 +54,12 @@ void capnhatds()
 	string masv;
 	cout << "\n Nhap ma so sinh vien can cap nhat:";
 	getline(cin, masv);
+	bool found = false;
 	for (auto& sv : danhsachsinhvien)
 	{
 		if (sv.thongtincanhan.masv == masv)
 		{
+			found = true;
 			cout << "Cap nhat thong tin moi sinh vien" << masv << ":\n";
 			cout << "Nhap ho ten (cu: " << sv.thongtincanhan.hoten << "):";
 			getline(cin, sv.thongtincanhan.hoten);
@@ -71,24 +76,27 @@ void capnhatds()
 			return;
 		}
 	}
+	if (!found)
+	{
+		cout << "Khong tim thay ma so sinh vien!!!" << masv << ".\n";
+	}
 }
 void xoasinhvien()
 {
 	string masv;
 	cout << " Nhap ma sinh vien can xoa: ";
 	getline(cin, masv);
-	auto it = remove_if(danhsachsinhvien.begin(), danhsachsinhvien.end(), [&](const SinhVien& sv)
-		{
+	auto it = remove_if(danhsachsinhvien.begin(), danhsachsinhvien.end(),
+		[&](const SinhVien& sv) {
 			return sv.thongtincanhan.masv == masv;
 		});
-	if (it != danhsachsinhvien.end())
-	{
+
+	if (it != danhsachsinhvien.end()) {
 		danhsachsinhvien.erase(it, danhsachsinhvien.end());
 		cout << "Xoa sinh vien thanh cong!\n";
 	}
-	else
-	{
-		cout << "Khong tim thay ma sinh vien.";
+	else {
+		cout << "Khong tim thay ma sinh vien.\n";
 	}
 }
 
@@ -177,8 +185,8 @@ void thongKeSinhVien() {
 	double gpaMax = -1.0, gpaMin = 11.0;
 
 	for (const auto& sv : danhsachsinhvien) {
-		if (sv.thongtincanhan.gioitinh == "Nam") soNam++;
-		else if (sv.thongtincanhan.gioitinh == "Nu") soNu++;
+		if (sv.thongtincanhan.gioitinh == "nam") soNam++;
+		else if (sv.thongtincanhan.gioitinh == "nu") soNu++;
 
 		gpaMax = max(gpaMax, sv.thongtinhoctap.diemGPA);
 		gpaMin = min(gpaMin, sv.thongtinhoctap.diemGPA);
@@ -191,28 +199,28 @@ void thongKeSinhVien() {
 	cout << "GPA cao nhat: " << gpaMax << "\n";
 	cout << "GPA thap nhat: " << gpaMin << "\n";
 }
-void luuFileCSV(const std::string& tenFile) {
+void luuFileCSV(const string& tenFile) {
 	ofstream file(tenFile);
 	if (!file) {
-		std::cout << "Khong the mo file da ghi.\n";
+		cout << "Khong the mo file da ghi.\n";
 		return;
 	}
 
 	for (const auto& sv : danhsachsinhvien) {
-		file << sv.thongtincanhan.masv << ","
-			<< sv.thongtincanhan.hoten << ","
-			<< sv.thongtincanhan.gioitinh << ","
-			<< sv.thongtincanhan.ngaysinh << ","
-			<< sv.thongtincanhan.diachi << ","
-			<< sv.thongtinhoctap.malop << ","
-			<< sv.thongtinhoctap.khoa << ","
-			<< sv.thongtinhoctap.chuyennganh << ","
-			<< sv.thongtinhoctap.diemGPA << ","
-			<< sv.thongtinhoctap.trangthai << ","
-			<< sv.thongtinhoctap.soTinChiHoanThanh << ","
-			<< sv.thongtinlienhe.gmail << ","
-			<< sv.thongtinlienhe.sodienthoai << ","
-			<< sv.thongtinbosung.hocbong << ","
+		file << sv.thongtincanhan.masv << setw(5)
+			<< sv.thongtincanhan.hoten << setw(5)
+			<< sv.thongtincanhan.gioitinh << setw(5)
+			<< sv.thongtincanhan.ngaysinh << setw(5)
+			<< sv.thongtincanhan.diachi << setw(5)
+			<< sv.thongtinhoctap.malop << setw(5)
+			<< sv.thongtinhoctap.khoa << setw(5)
+			<< sv.thongtinhoctap.chuyennganh << setw(5)
+			<< sv.thongtinhoctap.diemGPA << setw(5)
+			<< sv.thongtinhoctap.trangthai << setw(5)
+			<< sv.thongtinhoctap.soTinChiHoanThanh << setw(5)
+			<< sv.thongtinlienhe.gmail << setw(5)
+			<< sv.thongtinlienhe.sodienthoai << setw(5)
+			<< sv.thongtinbosung.hocbong << setw(5)
 			<< sv.thongtinbosung.hoatdong << "\n";
 	}
 
@@ -255,6 +263,7 @@ void docFileCSV(const string& tenFile) {
 	file.close();
 cout << "Du lieu da duoc doc tu file " << tenFile << ".\n";
 }
+
 void hienthidanhsachsinhvien()
 {
 	if (danhsachsinhvien.empty())
@@ -262,21 +271,21 @@ void hienthidanhsachsinhvien()
 		cout << "\n Danh sach sinh vien rong!!";
 		return;
 	}
-	cout << setw(10) << " MSSV: "
-		<< setw(20) << " Ho va Ten:"
-		<< setw(10) << " Gioi tinh: "
-		<< setw(15) << " Ngay sinh: "
-		<< setw(10) << " Diem GPA: "
+	cout << setw(15) << " MSSV "
+		<< setw(30) << " Ho va Ten"
+		<< setw(15) << " Gioi tinh "
+		<< setw(20) << " Ngay sinh"
+		<< setw(15) << " Diem GPA "
 		<< "\n";
-	cout << string(70, '-') << "\n";
+	cout << string(100, '-') << "\n";
 	for (const auto& sv : danhsachsinhvien)
 	{
-		cout <<setw(10) << sv.thongtincanhan.masv
-			<< setw(20) << sv.thongtincanhan.hoten
-			<< setw(10) << sv.thongtincanhan.gioitinh
-			<< setw(15) << sv.thongtincanhan.ngaysinh
-			<< setw(10) << sv.thongtinhoctap.diemGPA
-			<< "\n";
+		cout << setw(13) << sv.thongtincanhan.masv
+			<< setw(27) << sv.thongtincanhan.hoten
+			<< setw(13) << sv.thongtincanhan.gioitinh
+			<< setw(27) << sv.thongtincanhan.ngaysinh
+			<<setw(15) << fixed << setprecision(2) <<  sv.thongtinhoctap.diemGPA
+			<< endl;
 	}
 }
 
@@ -285,7 +294,7 @@ void hienthiMenu()
 	int chon;
 	do {
 		
-		cout << "\n=============QUAN LY SINH VIEN===============\n";
+		cout << "\n=============QUAN LY SINH VIEN==================\n";
 		cout << "\n 1. Them sinh vien";
 		cout << "\n 2. Hien thi danh sach sinh vien.";
 		cout << "\n 3. Cap nhat thong tin sinh vien.";

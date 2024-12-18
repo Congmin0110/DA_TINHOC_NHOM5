@@ -1,4 +1,3 @@
-
 #include<string>
 struct ThongTinCaNhan {
 	string masv;
