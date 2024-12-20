@@ -6,45 +6,155 @@
 #include<fstream>
 #include<sstream>
 #include<iomanip>
-#include <regex>
-vector<SinhVien>danhsachsinhvien;
 
+vector<SinhVien>danhsachsinhvien;
+using namespace std;
+
+bool isValidDate(int day, int month, int year) {
+	if (year < 1900 || year > 2100) return false;
+	if (month < 1 || month > 12) return false;
+
+	// Số ngày trong từng tháng
+	vector<int> daysInMonth = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+
+	// Kiểm tra năm nhuận
+	if ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)) {
+		daysInMonth[1] = 29;
+	}
+
+	return day >= 1 && day <= daysInMonth[month - 1];
+}
+
+string chuanHoaNgaySinh() {
+	string ngaysinh;
+	while (true) {
+		cout << "Nhap ngay thang nam sinh (DD/MM/YYYY): ";
+		getline(cin, ngaysinh);
+
+		// Tách các thành phần ngày, tháng, năm từ chuỗi nhập
+		istringstream iss(ngaysinh);
+		string dayStr, monthStr, yearStr;
+
+		if (getline(iss, dayStr, '/') && getline(iss, monthStr, '/') && getline(iss, yearStr)) {
+			try {
+				int day = stoi(dayStr);
+				int month = stoi(monthStr);
+				int year = stoi(yearStr);
+
+				// Kiểm tra tính hợp lệ
+				if (isValidDate(day, month, year)) {
+					// Chuẩn hóa định dạng DD/MM/YYYY
+					ostringstream oss;
+					oss << setw(2) << setfill('0') << day << "/"
+						<< setw(2) << setfill('0') << month << "/"
+						<< year;
+					return oss.str();
+				}
+				else {
+					cout << "Ngay thang nam sinh khong hop le. Vui long nhap lai.\n";
+				}
+			}
+			catch (...) {
+				cout << "Dinh dang ngay thang nam khong hop le. Vui long nhap lai.\n";
+			}
+		}
+		else {
+			cout << "Dinh dang ngay thang nam khong hop le. Vui long nhap lai.\n";
+		}
+	}
+}
+string inhoa(const string& str) {
+	string result = str;
+	transform(result.begin(), result.end(), result.begin(), ::toupper);
+	return result;
+}
+
+bool ktratrungmasSV(const string& masv)
+{
+	for (const auto& sv : danhsachsinhvien) {
+		if (sv.thongtincanhan.masv == masv) {
+			return true;
+		}
+	}
+	return false;
+}
+string vietHoaChuCaiDau(string str) {
+	bool vietHoa = true;
+	for (size_t i = 0; i < str.length(); ++i) {
+		if (vietHoa && isalpha(str[i])) {
+			str[i] = toupper(str[i]);
+			vietHoa = false;
+		}
+		else {
+			str[i] = tolower(str[i]);
+		}
+		if (str[i] == ' ') {
+			vietHoa = true;
+		}
+	}
+	return str;
+}
+string xepLoai(double gpa) {
+	if (gpa >= 9.0) {
+		return "Xuat sac";
+	}
+	else if (gpa >= 8.0) {
+		return "Gioi";
+	}
+	else if (gpa >= 6.5) {
+		return "Kha";
+	}
+	else if (gpa >= 5.0) {
+		return "Trung binh";
+	}
+	else {
+		return "Yeu";
+	}
+}
 void themsinhvien()
 {
 	SinhVien sv;
 	cout << "\nNhap thong tin sinh vien:\n";
 	cin.ignore();
-	cout << "\n Nhap ma sinh vien.";
-	getline(cin, sv.thongtincanhan.masv);
+	while (true) {
+		cout << "\n Nhap ma sinh vien:";
+		getline(cin, sv.thongtincanhan.masv);
+		if (ktratrungmasSV(sv.thongtincanhan.masv)) {
+			cout << "\n Ma sinh vien trung vui long nhap lai!!!";
+		}else
+		{
+			break;
+		}
+	}
 	cout << "\n Nhap ho ten. ";
 	getline(cin, sv.thongtincanhan.hoten);
-	cout << "Nhap gioi tinh(nam/nu). ";
+	sv.thongtincanhan.hoten = vietHoaChuCaiDau(sv.thongtincanhan.hoten);
+	cout << "Nhap gioi tinh(nam/nu): ";
 	getline(cin, sv.thongtincanhan.gioitinh);
-	cout << "Nhap ngay thang nam sinh (DD/MM/YYYY) ";
-	getline(cin, sv.thongtincanhan.ngaysinh);
-	cout << "Nhap dia chi. ";
+	sv.thongtincanhan.ngaysinh = chuanHoaNgaySinh();
+	cout << "Nhap dia chi: ";
 	getline(cin, sv.thongtincanhan.diachi);
-	cout << "Nhap ma lop. ";
+	cout << "Nhap ma lop: ";
 	getline(cin, sv.thongtinhoctap.malop);
-	cout << "Nhap khoa. ";
+	cout << "Nhap khoa: ";
 	getline(cin, sv.thongtinhoctap.khoa);
-	cout << "Nhap chuyen nganh. ";
+	cout << "Nhap chuyen nganh: ";
 	getline(cin, sv.thongtinhoctap.chuyennganh);
-	cout << "Nhap diem GPA. ";
+	cout << "Nhap diem GPA: ";
 	cin >> sv.thongtinhoctap.diemGPA;
 	cin.ignore();
-	cout << "Nhap trang thai hoc tap(con/khong). ";
+	cout << "Nhap trang thai hoc tap(con/khong): ";
 	getline(cin, sv.thongtinhoctap.trangthai);
-	cout << "Nhap so tin chi da hoan thanh. ";
+	cout << "Nhap so tin chi da hoan thanh: ";
 	cin >> sv.thongtinhoctap.soTinChiHoanThanh;
 	cin.ignore();
-	cout << "Nhap gmail. ";
+	cout << "Nhap gmail: ";
 	getline(cin, sv.thongtinlienhe.gmail);
-	cout << "Nhap so dien thoai. ";
+	cout << "Nhap so dien thoai: ";
 	getline(cin, sv.thongtinlienhe.sodienthoai);
-	cout << "Nhap hoc bong (co/khong). ";
+	cout << "Nhap hoc bong (co/khong): ";
 	getline(cin, sv.thongtinbosung.hocbong);
-	cout << "Nhap hoat dong ngoai khoa (co/khong). ";
+	cout << "Nhap hoat dong ngoai khoa (co/khong): ";
 	getline(cin, sv.thongtinbosung.hoatdong);
 	danhsachsinhvien.push_back(sv);
 	cout << "Them sinh vien thanh cong!!!";
@@ -53,6 +163,7 @@ void capnhatds()
 {
 	string masv;
 	cout << "\n Nhap ma so sinh vien can cap nhat:";
+	cin.ignore();
 	getline(cin, masv);
 	bool found = false;
 	for (auto& sv : danhsachsinhvien)
@@ -85,6 +196,7 @@ void xoasinhvien()
 {
 	string masv;
 	cout << " Nhap ma sinh vien can xoa: ";
+	cin.ignore();
 	getline(cin, masv);
 	auto it = remove_if(danhsachsinhvien.begin(), danhsachsinhvien.end(),
 		[&](const SinhVien& sv) {
@@ -263,32 +375,42 @@ void docFileCSV(const string& tenFile) {
 	file.close();
 cout << "Du lieu da duoc doc tu file " << tenFile << ".\n";
 }
-
-void hienthidanhsachsinhvien()
-{
-	if (danhsachsinhvien.empty())
-	{
-		cout << "\n Danh sach sinh vien rong!!";
+void hienthidanhsachsinhvien() {
+	if (danhsachsinhvien.empty()) {
+		cout << "\nDanh sach sinh vien rong!!\n";
 		return;
 	}
-	cout << setw(15) << " MSSV "
-		<< setw(30) << " Ho va Ten"
-		<< setw(15) << " Gioi tinh "
-		<< setw(20) << " Ngay sinh"
-		<< setw(15) << " Diem GPA "
-		<< "\n";
-	cout << string(100, '-') << "\n";
-	for (const auto& sv : danhsachsinhvien)
-	{
-		cout << setw(13) << sv.thongtincanhan.masv
-			<< setw(27) << sv.thongtincanhan.hoten
-			<< setw(13) << sv.thongtincanhan.gioitinh
-			<< setw(27) << sv.thongtincanhan.ngaysinh
-			<<setw(15) << fixed << setprecision(2) <<  sv.thongtinhoctap.diemGPA
-			<< endl;
+
+	
+	const int width_mssv = 15;
+	const int width_hoten = 30;
+	const int width_gioitinh = 15;
+	const int width_ngaysinh = 20;
+	const int width_diemgpa = 10;
+	const int width_xeploai = 15;
+
+	cout << "+---------------------------------------------------------------------------------------------------------+\n";
+	cout <<"| " << setw(width_mssv - 2) << left << "MSSV"
+		<< "| " << setw(width_hoten - 2) << left << "Ho va Ten"
+		<< "| " << setw(width_gioitinh - 2) << left << "Gioi tinh"
+		<< "| " << setw(width_ngaysinh - 2) << left << "Ngay sinh"
+		<< "| " << setw(width_diemgpa - 2) << left << "Diem GPA"
+		<< "| " << setw(width_xeploai-2) << left<< "Xep loai"
+		<< "|\n";
+	cout << "+----------------------------------------------------------------------------------------------------------+\n";
+
+	
+	for (const auto& sv : danhsachsinhvien) {
+		cout <<"| " << setw(width_mssv - 2) << left <<inhoa( sv.thongtincanhan.masv)
+			<< "| " << setw(width_hoten - 2) << left << sv.thongtincanhan.hoten
+			<< "| " << setw(width_gioitinh - 2) << left << sv.thongtincanhan.gioitinh
+			<< "| " << setw(width_ngaysinh - 2) << left << sv.thongtincanhan.ngaysinh
+			<< "| " << setw(width_diemgpa - 2) << fixed << setprecision(2) << sv.thongtinhoctap.diemGPA
+			<< "| " << setw(width_xeploai-2) << left <<xepLoai(sv.thongtinhoctap.diemGPA)
+			<< "|\n";
+		cout << "+------------------------------------------------------------------------------------------------------+\n";
 	}
 }
-
 void hienthiMenu()
 { 
 	int chon;
@@ -339,6 +461,8 @@ void hienthiMenu()
 
 int main()
 {
+	system("chcp 65001>nul");
 	hienthiMenu();
+	
 	return 0;
 }
