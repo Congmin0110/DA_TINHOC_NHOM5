@@ -14,10 +14,7 @@ bool isValidDate(int day, int month, int year) {
 	if (year < 1900 || year > 2100) return false;
 	if (month < 1 || month > 12) return false;
 
-	// Số ngày trong từng tháng
 	vector<int> daysInMonth = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
-
-	// Kiểm tra năm nhuận
 	if ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)) {
 		daysInMonth[1] = 29;
 	}
@@ -31,7 +28,6 @@ string chuanHoaNgaySinh() {
 		cout << "Nhap ngay thang nam sinh (DD/MM/YYYY): ";
 		getline(cin, ngaysinh);
 
-		// Tách các thành phần ngày, tháng, năm từ chuỗi nhập
 		istringstream iss(ngaysinh);
 		string dayStr, monthStr, yearStr;
 
@@ -40,10 +36,8 @@ string chuanHoaNgaySinh() {
 				int day = stoi(dayStr);
 				int month = stoi(monthStr);
 				int year = stoi(yearStr);
-
-				// Kiểm tra tính hợp lệ
 				if (isValidDate(day, month, year)) {
-					// Chuẩn hóa định dạng DD/MM/YYYY
+				
 					ostringstream oss;
 					oss << setw(2) << setfill('0') << day << "/"
 						<< setw(2) << setfill('0') << month << "/"
@@ -65,7 +59,7 @@ string chuanHoaNgaySinh() {
 }
 string inhoa(const string& str) {
 	string result = str;
-	transform(result.begin(), result.end(), result.begin(), ::toupper);
+	transform(result.begin(), result.end(), result.begin(), toupper);
 	return result;
 }
 
@@ -126,7 +120,7 @@ void themsinhvien()
 			break;
 		}
 	}
-	cout << "\n Nhap ho ten. ";
+	cout << "\n Nhap ho ten: ";
 	getline(cin, sv.thongtincanhan.hoten);
 	sv.thongtincanhan.hoten = vietHoaChuCaiDau(sv.thongtincanhan.hoten);
 	cout << "Nhap gioi tinh(nam/nu): ";
@@ -285,11 +279,11 @@ void sapXepSinhVien() {
 			});
 	}
 	else {
-		std::cout << "Lua chon hop le.\n";
+		cout << "Lua chon hop le.\n";
 		return;
 	}
 
-	std::cout << "Sap xep thanh cong.\n";
+	cout << "Sap xep thanh cong.\n";
 }
 void thongKeSinhVien() {
 	int tongSoSinhVien = danhsachsinhvien.size();
@@ -319,20 +313,20 @@ void luuFileCSV(const string& tenFile) {
 	}
 
 	for (const auto& sv : danhsachsinhvien) {
-		file << sv.thongtincanhan.masv << setw(5)
-			<< sv.thongtincanhan.hoten << setw(5)
-			<< sv.thongtincanhan.gioitinh << setw(5)
-			<< sv.thongtincanhan.ngaysinh << setw(5)
-			<< sv.thongtincanhan.diachi << setw(5)
-			<< sv.thongtinhoctap.malop << setw(5)
-			<< sv.thongtinhoctap.khoa << setw(5)
-			<< sv.thongtinhoctap.chuyennganh << setw(5)
-			<< sv.thongtinhoctap.diemGPA << setw(5)
-			<< sv.thongtinhoctap.trangthai << setw(5)
-			<< sv.thongtinhoctap.soTinChiHoanThanh << setw(5)
-			<< sv.thongtinlienhe.gmail << setw(5)
-			<< sv.thongtinlienhe.sodienthoai << setw(5)
-			<< sv.thongtinbosung.hocbong << setw(5)
+		file << sv.thongtincanhan.masv << ","
+			<< sv.thongtincanhan.hoten << ","
+			<< sv.thongtincanhan.gioitinh << ","
+			<< sv.thongtincanhan.ngaysinh << ","
+			<< sv.thongtincanhan.diachi << ","
+			<< sv.thongtinhoctap.malop << ","
+			<< sv.thongtinhoctap.khoa << ","
+			<< sv.thongtinhoctap.chuyennganh << ","
+			<< sv.thongtinhoctap.diemGPA << ","
+			<< sv.thongtinhoctap.trangthai << ","
+			<< sv.thongtinhoctap.soTinChiHoanThanh << ","
+			<< sv.thongtinlienhe.gmail << ","
+			<< sv.thongtinlienhe.sodienthoai << ","
+			<< sv.thongtinbosung.hocbong << ","
 			<< sv.thongtinbosung.hoatdong << "\n";
 	}
 
@@ -380,8 +374,6 @@ void hienthidanhsachsinhvien() {
 		cout << "\nDanh sach sinh vien rong!!\n";
 		return;
 	}
-
-	
 	const int width_mssv = 15;
 	const int width_hoten = 30;
 	const int width_gioitinh = 15;
@@ -389,7 +381,7 @@ void hienthidanhsachsinhvien() {
 	const int width_diemgpa = 10;
 	const int width_xeploai = 15;
 
-	cout << "+---------------------------------------------------------------------------------------------------------+\n";
+	cout <<"+---------------------------------------------------------------------------------------------------------+\n";
 	cout <<"| " << setw(width_mssv - 2) << left << "MSSV"
 		<< "| " << setw(width_hoten - 2) << left << "Ho va Ten"
 		<< "| " << setw(width_gioitinh - 2) << left << "Gioi tinh"
@@ -425,6 +417,7 @@ void hienthiMenu()
 		cout << "\n 6. Sap xep danh sach sinh vien.";
 		cout << "\n 7. Thong ke du lieu sinh vien.";
 		cout << "\n 8. Luu danh sach sinh vien vao file.";
+		cout << "\n 9. Doc danh sach sinh vien vao file.";
 		cout << "\n 0. Thoat!!";
 		cout << "\n             Moi ban chon!!";
 		cout << "\n================================================\n";
@@ -455,14 +448,14 @@ void hienthiMenu()
 		case 8:
 			luuFileCSV("sinhvien.csv");
 			break;
+		case 9:
+			docFileCSV("sinhvien.csv");
 		}
 	} while (chon != 0);
 }
 
 int main()
 {
-	system("chcp 65001>nul");
 	hienthiMenu();
-	
 	return 0;
 }
